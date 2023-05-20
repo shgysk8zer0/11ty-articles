@@ -1,0 +1,44 @@
+<a href="{{ post.url }}" title="{{ post.title }}">
+	<h3 class="center post-title">{{ post.title }}</h3>
+	{% if post.imgur %}
+		{% include "11ty-common/imgur.html"
+			url: post.imgur
+			sizes: '(min-width: 700px) 23vw, 100vw'
+			alt: 'Article thumbnail'
+			class: 'post-img'
+			decoding: 'async'
+		%}
+	{% elsif post.image %}
+		<img src="{{ post.image }}" class="post-img"{% if post.srcset %} srcset="{{ post.srcset | join: ', ' }}" sizes="(min-width: 700px) 23vw, 100vw"{% endif %} alt="Article thumbnail" loading="lazy" crossorigin="anonymous" />
+	{% endif %}
+</a>
+<br />
+<details class="accordion post-preview">
+	<summary role="button">More Info</summary>
+	<div>
+		<hr />
+		<div>
+			{% include "11ty-common/icon.html" icon: 'avatar-default' %}
+			{{ post.author.givenName }} {{ post.author.familyName }}
+		</div>
+		<time datetime="{{ post.date | date: data_to_xmlschema }}">
+			{% include "11ty-common/icon.html" icon: 'calendar' %}
+			{{ post.date | date: '%a, %B %e, %Y' }}
+		</time>
+		{% if post.category %}
+			<a href="{{ post.category | slugify | prepend: '/posts/' }}" class="block">
+				{% include "11ty-common/icon.html" icon: 'tag' %}
+				{{ post.category }}
+			</a>
+		{% endif %}
+		{% if post.description %}
+			<blockquote>
+				{{ post.description }}
+			</blockquote>
+		{% else %}
+			<blockquote class="post-excerpt clearfix">
+				{{ post.content | strip_html | truncatewords: 20 }}
+			</blockquote>
+		{% endif %}
+	</div>
+</details>

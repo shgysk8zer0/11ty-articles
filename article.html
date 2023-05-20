@@ -1,0 +1,113 @@
+<span hidden="">
+	{% include "11ty-articles/breadcrumb-nav.html" category=page.category post=page %}
+</span>
+<article itemtype="http://schema.org/{{ itemtype | default: 'Article' }}" role="article" class="font-article" itemscope="">
+	{% if page.publisher %}
+		<div itemprop="publisher" itemtype="https://schema.org/{{ publisher[@type] | default: 'Organization' }}" itemscope="" hidden="">
+			<meta itemprop="name" content="{{ publisher.name }}" />
+			{% if publisher.url %}<meta itemprop="url" content="{{ publisher.url }}" />{% endif %}
+			{% if publisher.logo %}
+				<div itemprop="logo" itemtype="https://schema.org/ImageObject" itemscope="" hidden="">
+					<meta itemprop="url" content="{{ publisher.logo.url }}" />
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	<header class="article-meta background-accent color-alt">
+		{% if page.tags %}<meta itemprop="keywords" content="{{ page.tags | join: ', '}}" />{% endif %}
+		{% if page.thumbnail.url %}
+			<meta itemprop="image" content="{{ page.thumbnail.url }}" />
+			<meta itemprop="width" content="{{ page.thumbnail.width }}" />
+			<meta itemprop="height" content="{{ page.thumbnail.height }}" />
+		{% elsif page.thumbnail %}
+			<meta itemprop="image" content="{{ page.thumbnail }}" />
+		{% elsif page.imgur %}
+			{% capture hash %}{{ page.imgur | remove: 'https://i.imgur.com/' | remove: 'https://imgur.com/' | remove: '.png' | remove: '.jpg' }}{% endcapture %}
+			<meta itemprop="image" content="https://i.imgur.com/{{ hash }}l.png" />
+		{% elsif page.image %}
+			<meta itemprop="image" content="{{ page.image | absolute_url }}" />
+		{% endif %}
+		{% if page.description %}
+			<meta itemprop="description" content="{{ page.description }}" />
+		{% endif %}
+		{% if page.tags %}
+			<meta itemprop="keywords" content="{{ page.tags | join: ', '}}" />
+		{% endif %}
+		<meta itemptop="wordCount" content="{{ content | number_of_words }}" />
+		<meta itemprop="url" content="{{ page.url | absolute_url }}" />
+		<details open="">
+			<summary class="block">
+				<h1 class="flex">
+					<span itemprop="headline" class="font-title grow-1">{{ page.title }}</span>
+					{% include "11ty-commong/icon.html"" icon: "view-more" fill: "currentColor" height: "20" width: "20" %}
+				</h1>
+			</summary>
+			<div class="font-main post-details">
+				{% if page.category %}
+					<div class="tags">
+						<a href="{{ site.url }}/posts/{{ page.category | downcase }}">
+							{% include "11ty-commong/icon.html" icon: 'tag' %}
+							<b>{{ page.category | capitalize }}</b>
+						</a>
+					</div>
+					<hr />
+				{% endif %}
+				{% if site.data.authors contains author %}
+					{% assign tmp_author=site.data.authors[author] %}
+					{% include "11ty-articles/by-line.html" author=tmp_author %}
+				{% elsif author %}
+					{% include "11ty-articles/by-line.html" author=author %}
+				{% endif %}
+				{% if page.date %}
+					<b class="meta-date-posted">
+						<span>Posted on</span>
+						<time itemprop="datePublished" datetime="{{ page.date | date: date_to_xmlschema }}">
+							{{ page.date | date: '%a, %b. %e, %Y' }}
+						</time>
+					</b>
+				{% endif %}
+				{% if page.updated %}
+					<b class="meta-date-updated">
+						<span>Updated on</span>
+						<time itemprop="dateModified" datetime="{{ page.updated | date: date_to_xmlschema }}">
+							{{ page.updated | date: '%a, %b. %e, %Y' }}
+						</time>
+					</b>
+				{% else %}
+					<meta itemprop="dateModified" content="{{ page.date | date: date_to_xmlschema }}" />
+				{% endif %}
+				{% if site.data.publisher %}
+					{% assign publisher = site.data.publisher %}
+					<div itemprop="publisher" itemtype="{{ publisher['@context'] | default: 'http://schema.org' }}/{{ publisher['@type'] | default: 'Organization' }}" itemscope="" hidden="">
+						<meta itemprop="name" content="{{ publisher.name }}" />
+						{% if publisher.url %}<meta itemprop="url" content="{{ publisher.url }}" />{% endif %}
+						{% if publisher.email %}<meta itemprop="email" content="{{ publisher.email }}" />{% endif %}
+						{% if publisher.logo %}
+							<div itemprop="logo" itemtype="http://schema.org/ImageObject" itemscope="">
+								<meta itemprop="url" content="{{ publisher.logo.url | absolute_url }}" />
+							</div>
+						{% endif %}
+						{% if publisher.sameAs %}{% for link in publisher.sameAs %}
+							<meta itemprop="sameAs" content="{{ link }}" />
+						{% endfor %}{% endif %}
+					</div>
+				{% endif %}
+			</div>
+		</details>
+	</header>
+	{% if share != false %}{% include "11ty-common/share-buttons.html"
+		facebook: true
+		twitter: true
+		reddit: true
+		linkedin: true
+		text: description
+	%}{% endif %}
+	<div itemprop="articleBody mainEntityOfPage" class="optimize-legibility"{% if columns %} data-columns="{{ columns }}"{% endif %}>{{ content }}</div>
+	<footer class="clearfix relative">
+		{% if site.disqus %}
+			<disqus-comments id="comments" class="block" site="{{ site.disqus }}" itemprop="comments" itemtype="https://schema.org/WEbPageElement" itemscope=""></disqus-comments>
+		{% endif %}
+		<hr />
+		{% include "11ty-common/license.html" %}
+	</footer>
+</article>
