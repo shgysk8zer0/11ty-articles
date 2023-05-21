@@ -1,15 +1,15 @@
-<a href="{{ post.url }}" title="{{ post.title }}">
-	<h3 class="center post-title">{{ post.title }}</h3>
-	{% if post.imgur %}
+<a href="{{ post.url }}" title="{{ post.data.title }}">
+	<h3 class="center post-title">{{ post.data.title }}</h3>
+	{% if post.data.imgur %}
 		{% include "11ty-common/imgur.html"
-			url: post.imgur
+			url: post.data.imgur
 			sizes: '(min-width: 700px) 23vw, 100vw'
 			alt: 'Article thumbnail'
 			class: 'post-img'
 			decoding: 'async'
 		%}
-	{% elsif post.image %}
-		<img src="{{ post.image }}" class="post-img"{% if post.srcset %} srcset="{{ post.srcset | join: ', ' }}" sizes="(min-width: 700px) 23vw, 100vw"{% endif %} alt="Article thumbnail" loading="lazy" crossorigin="anonymous" />
+	{% elsif post.data.image %}
+		<img src="{{ post.data.image }}" class="post-img"{% if post.data.srcset %} srcset="{{ post.data.srcset | join: ', ' }}" sizes="(min-width: 700px) 23vw, 100vw"{% endif %} alt="Article thumbnail" loading="lazy" crossorigin="anonymous" />
 	{% endif %}
 </a>
 <br />
@@ -19,21 +19,21 @@
 		<hr />
 		<div>
 			{% include "11ty-common/icon.html" icon: 'avatar-default' %}
-			{{ post.author.givenName }} {{ post.author.familyName }}
+			{{ post.data.author.givenName }} {{ post.data.author.familyName }}
 		</div>
 		<time datetime="{{ post.date | date: data_to_xmlschema }}">
 			{% include "11ty-common/icon.html" icon: 'calendar' %}
 			{{ post.date | date: '%a, %B %e, %Y' }}
 		</time>
-		{% if post.category %}
+		{% if post.data.category %}
 			<a href="{{ post.category | slugify | prepend: '/posts/' }}" class="block">
 				{% include "11ty-common/icon.html" icon: 'tag' %}
-				{{ post.category }}
+				{{ post.data.category }}
 			</a>
 		{% endif %}
-		{% if post.description %}
+		{% if post.data.description %}
 			<blockquote>
-				{{ post.description }}
+				{{ post.data.description }}
 			</blockquote>
 		{% else %}
 			<blockquote class="post-excerpt clearfix">
